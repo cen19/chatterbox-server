@@ -12,9 +12,12 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var mockData = {
-  results: [{text: 'hi', username: 'marcus'}]
-};
+var fs = require('fs');
+var db = require('./database.js');
+
+
+db.database.readDB();
+
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -31,32 +34,41 @@ var requestHandler = function(request, response) {
   var url = request.url;
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
- 
-  if ( (method === 'GET' || method === 'OPTIONS') && url === '/classes/messages') {
-
+  // get and options
+  if ( (method === 'GET' || method === 'OPTIONS') ) {
+    
     responseHeaders['Content-Type'] = 'application/json';
     response.writeHead(200, responseHeaders);
+    if (url === '/classes/messages') {
+      response.end(JSON.stringify(db.database.storage));
+    }
 
-    var message = JSON.stringify(mockData);
-    response.end(message);
+    if (url === '/classes/messages?order=-createdAt') {
+      
+      var databaseMessages = {results: db.database.storage.results.slice().reverse()};
+      response.end(JSON.stringify(databaseMessages));
 
+    }
+  // posts
   } else if (method === 'POST') {
     response.writeHead(201, responseHeaders);
-
-    var message = '';
+    var data = '';
     request.on('data', function(chunk) {
-      console.log('BODY: ' + chunk);
-      message += chunk;
-    });
 
+      data += chunk;
+
+    }); 
     request.on('end', function() {
-      
-      console.log(message.split('&'));
-      mockData.results.push(JSON.parse(message));
-      response.end('Reached POST route');
- 
+
+      var thing = JSON.parse(data);
+      thing.objectId = new Date();
+      db.database.storage.results.push(thing);
+
+      fs.appendFile('./server/database.txt', JSON.stringify(thing) + ', ');
+
+      response.end(JSON.stringify(thing));
     });
-    
+  // everything else
   } else {
 
     responseHeaders['Content-Type'] = 'text/plain';
