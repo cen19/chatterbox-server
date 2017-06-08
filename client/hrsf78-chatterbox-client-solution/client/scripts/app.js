@@ -42,8 +42,10 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'POST',
-      data: message,
+      data: JSON.stringify(message),
+      contentType: 'application/json',
       success: function (data) {
+        console.log('SUCCESSSSSS');
         // Clear messages input
         app.$message.val('');
 
@@ -84,6 +86,14 @@ var app = {
           // Store the ID of the most recent message
           app.lastMessageId = mostRecentMessage.objectId;
         }
+ // Update the UI with the fetched rooms
+        // app.renderRoomList(data.results);
+
+        // // Update the UI with the fetched messages
+        // app.renderMessages(data.results, animate);
+
+        // // Store the ID of the most recent message
+        // app.lastMessageId = mostRecentMessage.objectId;
       },
       error: function(error) {
         console.error('chatterbox: Failed to fetch messages', error);
