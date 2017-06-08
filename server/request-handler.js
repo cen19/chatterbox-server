@@ -13,7 +13,7 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 
 var mockData = {
-  results: []
+  results: [{text: 'hi', username: 'marcus'}]
 };
 
 var defaultCorsHeaders = {
@@ -32,7 +32,7 @@ var requestHandler = function(request, response) {
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
  
-  if (method === 'GET' && url === '/classes/messages') {
+  if ( (method === 'GET' || method === 'OPTIONS') && url === '/classes/messages') {
 
     responseHeaders['Content-Type'] = 'application/json';
     response.writeHead(200, responseHeaders);
@@ -42,13 +42,16 @@ var requestHandler = function(request, response) {
 
   } else if (method === 'POST') {
     response.writeHead(201, responseHeaders);
+
     var message = '';
     request.on('data', function(chunk) {
+      console.log('BODY: ' + chunk);
       message += chunk;
     });
 
     request.on('end', function() {
       
+      console.log(message.split('&'));
       mockData.results.push(JSON.parse(message));
       response.end('Reached POST route');
  
