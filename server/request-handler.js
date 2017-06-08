@@ -13,19 +13,7 @@ this file and include it in basic-server.js so that it actually works.
 **************************************************************/
 
 var mockData = {
-  
-  results: [
-      
-    // {
-    //   objectId: 'ngxbOzDXqm',
-    //   username: 'Dylan',
-    //   roomname: '',
-    //   text: 'x',
-    //   createdAt: '2017-05-28T07:05:09.787Z',
-    //   updatedAt: '2017-05-28T07:05:09.787Z'
-    // }
-  ]
-  
+  results: []
 };
 
 var defaultCorsHeaders = {
@@ -36,73 +24,47 @@ var defaultCorsHeaders = {
 };
 
 var requestHandler = function(request, response) {
-  // get url
-  var url = request.url;
-  // get headers
-  var headers = request.headers;
-  // get method : GET/POST/PUT/DELETE
-  var method = request.method;
-  // get request body by parsing it
-    // request.on
 
-  var body = [];
-
-  var statusCode = 200;
-  if (method === 'POST') {
-    statusCode = 201;
-  }
-  if (url !== '/classes/messages') {
-    statusCode = 404;
-  }
   var responseHeaders = defaultCorsHeaders;
-  responseHeaders['Content-Type'] = 'text/plain';
-  response.writeHead(statusCode, responseHeaders);
+  var headers = request.headers;
+  var method = request.method;
+  var url = request.url;
 
-  // respond with error message to user if we have an error
-  
-  // check if it is a GET request and URL is the one that we wanted
-    // start formulating our response
+  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+ 
   if (method === 'GET' && url === '/classes/messages') {
-    // response string version of data(messages)
-    response.end(JSON.stringify(mockData));
 
-  }
-  if (method === 'POST' && url === '/classes/messages') {
-    request.on('error', function(err) {
-      console.error(err);
-    }).on('data', function(chunk) {
-      body.push(chunk);
-    }).on('end', function() {
-      body = Buffer.concat(body).toString();
-      
+    responseHeaders['Content-Type'] = 'application/json';
+    response.writeHead(200, responseHeaders);
 
-      var data = JSON.parse(body);
-      console.log(data);
-      mockData.results.push(data);
-      // response.writeHead(201, responseHeaders);
-      // save the data that was sent to the server
-      response.end('Reached POST route');
+    var message = JSON.stringify(mockData);
+    response.end(message);
 
+  } else if (method === 'POST') {
+    response.writeHead(201, responseHeaders);
+    var message = '';
+    request.on('data', function(chunk) {
+      message += chunk;
     });
-  } 
-  // if (request.url === '/chatterbox/classes/messages') {
-  //   response.end(JSON.stringify(mockData));
-  // }
+
+    request.on('end', function() {
+      
+      mockData.results.push(JSON.parse(message));
+      response.end('Reached POST route');
+ 
+    });
     
+  } else {
+
+    responseHeaders['Content-Type'] = 'text/plain';
+    response.writeHead(404, responseHeaders);
+    response.end('404');
   
-  // start responding
-    // 
+  }
+};
 
 
-
-
-
-
-
-
-
-
-
+exports.requestHandler = requestHandler;
 
   // Request and Response come from node's http module.
   //
@@ -118,7 +80,6 @@ var requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
   // var statusCode = 200;     <-- need these later
@@ -143,8 +104,7 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World! ' + request.url);
-};
+  // response.end('Hello, World! ' + request.url);
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
@@ -155,5 +115,3 @@ var requestHandler = function(request, response) {
 //
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
-
-exports.requestHandler = requestHandler;
