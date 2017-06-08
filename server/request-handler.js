@@ -45,8 +45,8 @@ var requestHandler = function(request, response) {
 
     if (url === '/classes/messages?order=-createdAt') {
       
-      var databaseMessages = {results: db.database.storage.results.slice().reverse()};
-      response.end(JSON.stringify(databaseMessages));
+      var allMessages = {results: db.database.storage.results.slice().reverse()};
+      response.end(JSON.stringify(allMessages));
 
     }
   // posts
@@ -64,7 +64,7 @@ var requestHandler = function(request, response) {
       thing.objectId = new Date();
       db.database.storage.results.push(thing);
 
-      fs.appendFile('./server/database.txt', JSON.stringify(thing) + ', ');
+      fs.appendFile('./server/database.txt', JSON.stringify(thing) + '&*&');
 
       response.end(JSON.stringify(thing));
     });

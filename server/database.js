@@ -13,7 +13,7 @@ database = {
       console.log('reading data');
   
       var string = String.fromCharCode.apply(null, data);
-      string.slice(0, string.length - 2).split(', ').map(item => {
+      string.slice(0, string.length - 3).split('&*&').map(item => {
         database.storage.results.push(JSON.parse(item));
       });
 
