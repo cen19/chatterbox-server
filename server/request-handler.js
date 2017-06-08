@@ -16,14 +16,14 @@ var mockData = {
   
   results: [
       
-    {
-      objectId: 'ngxbOzDXqm',
-      username: 'Dylan',
-      roomname: '',
-      text: 'x',
-      createdAt: '2017-05-28T07:05:09.787Z',
-      updatedAt: '2017-05-28T07:05:09.787Z'
-    }
+    // {
+    //   objectId: 'ngxbOzDXqm',
+    //   username: 'Dylan',
+    //   roomname: '',
+    //   text: 'x',
+    //   createdAt: '2017-05-28T07:05:09.787Z',
+    //   updatedAt: '2017-05-28T07:05:09.787Z'
+    // }
   ]
   
 };
@@ -51,6 +51,9 @@ var requestHandler = function(request, response) {
   if (method === 'POST') {
     statusCode = 201;
   }
+  if (url !== '/classes/messages') {
+    statusCode = 404;
+  }
   var responseHeaders = defaultCorsHeaders;
   responseHeaders['Content-Type'] = 'text/plain';
   response.writeHead(statusCode, responseHeaders);
@@ -62,6 +65,7 @@ var requestHandler = function(request, response) {
   if (method === 'GET' && url === '/classes/messages') {
     // response string version of data(messages)
     response.end(JSON.stringify(mockData));
+
   }
   if (method === 'POST' && url === '/classes/messages') {
     request.on('error', function(err) {
