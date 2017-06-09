@@ -34,6 +34,7 @@ var requestHandler = function(request, response) {
   var url = request.url;
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
+
   // get and options
   if ( (method === 'GET' || method === 'OPTIONS') ) {
     

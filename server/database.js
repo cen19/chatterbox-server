@@ -10,21 +10,12 @@ database = {
         console.log(err);
       } 
 
-      console.log('reading data');
+      console.log('Getting data from database...');
   
       var string = String.fromCharCode.apply(null, data);
       string.slice(0, string.length - 3).split('&*&').map(item => {
         database.storage.results.push(JSON.parse(item));
       });
-
-
-  // dataArrayPreparsed = something.slice(0, something.length - 2);
-  // dataParsed = testThing.split(', ').map(function(item) {
-  //   mockData.results.push(JSON.parse(item));
-  // });
-
-      // console.log(dataParsed, typeof dataParsed);
-
     });
   }
 };
